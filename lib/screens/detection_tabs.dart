@@ -38,22 +38,28 @@ class _DetectionTabsState extends State<DetectionTabs> {
 
   String imageLabel = "";
   List? result;
+  List<IconData> icons = [
+    Icons.storefront,
+    Icons.document_scanner,
+  ];
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.black,
       appBar: AppBar(
+        centerTitle: true,
         backgroundColor: Colors.black,
+        iconTheme: const IconThemeData(color: Colors.black),
         title: const Text(
           "Object detection",
-          style: TextStyle(color: Colors.white),
+          style: TextStyle(color: Colors.black),
         ),
         flexibleSpace: Container(
           decoration: const BoxDecoration(
               borderRadius: BorderRadius.only(
                   bottomLeft: Radius.circular(25),
                   bottomRight: Radius.circular(25)),
-              color: Color(0xff375079)),
+              color: Colors.white),
         ),
         // backgroundColor: Colors.grey[100],
         elevation: 0,
@@ -95,48 +101,24 @@ class _DetectionTabsState extends State<DetectionTabs> {
               ),
             ),
             Container(
-              margin: const EdgeInsets.only(top: 20),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  DetectTabs(
+              margin: EdgeInsets.only(top: 15),
+              height: 40,
+              width: double.infinity,
+              child: ListView.builder(
+                scrollDirection: Axis.horizontal,
+                itemCount: 2,
+                itemBuilder: (_, size) {
+                  return DetectTabs(
                     iconData: Icons.storefront,
                     getImage: getImage,
-                  ),
-                  Container(
-                    margin: const EdgeInsets.only(left: 15),
-                    child: ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.white,
-                        foregroundColor: Colors.grey[400],
-                        shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(8.0)),
-                      ),
-                      onPressed: () {},
-                      child: Container(
-                        margin: const EdgeInsets.symmetric(
-                          vertical: 5,
-                          horizontal: 5,
-                        ),
-                        child: Column(
-                          children: const [
-                            Icon(
-                              Icons.document_scanner,
-                              size: 30,
-                              color: Color(0xff375079),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ),
-                ],
+                  );
+                },
               ),
             ),
             Container(
               margin: const EdgeInsets.only(top: 50),
               child: Text(
-                "${result?[0]["label"]}",
+                "${result?[0]["label"] ?? ""}",
                 style: const TextStyle(fontSize: 20, color: Colors.white),
               ),
             )
