@@ -7,7 +7,7 @@ import 'package:google_mlkit_image_labeling/google_mlkit_image_labeling.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:path/path.dart';
 import 'dart:io' as io;
-
+import 'package:http/http.dart' as http;
 import 'package:path_provider/path_provider.dart';
 import 'package:project2implement/screens/detect_tabs.dart';
 
@@ -69,19 +69,15 @@ class _DetectionTabsState extends State<DetectionTabs> {
             child: Column(
           // crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            if (imageLabelChecking) const CircularProgressIndicator(),
-            if (!imageLabelChecking && imageFile == null)
-              Container(
-                width: 300,
-                height: 300,
-                color: Colors.grey[350],
-              ),
-            if (imageFile != null)
-              Image.file(
-                io.File(imageFile!.path),
-                width: 450,
-                height: 450,
-              ),
+            // if (imageLabelChecking) const CircularProgressIndicator(),
+            // if (!imageLabelChecking && imageFile == null)
+            //   Container(
+            //     width: 300,
+            //     height: 300,
+            //     color: Colors.grey[350],
+            //   ),
+            Image.network(
+                "https://firebasestorage.googleapis.com/v0/b/alaa-fb1c3.appspot.com/o/WhatsApp%20Image%202023-05-30%20at%2000.04.56.jpg?alt=media&token=c034c3f8-1b9a-4016-b980-a11558cefe1c"),
             Container(
               margin: const EdgeInsets.only(top: 30),
               child: const Text(
@@ -101,20 +97,48 @@ class _DetectionTabsState extends State<DetectionTabs> {
               ),
             ),
             Container(
-              margin: EdgeInsets.only(top: 15),
-              height: 40,
-              width: double.infinity,
-              child: ListView.builder(
-                scrollDirection: Axis.horizontal,
-                itemCount: 2,
-                itemBuilder: (_, size) {
-                  return DetectTabs(
-                    iconData: Icons.storefront,
-                    getImage: getImage,
-                  );
-                },
+              margin: EdgeInsets.only(left: 10, right: 10),
+              child: ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.white,
+                  foregroundColor: Colors.grey[400],
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8.0)),
+                ),
+                onPressed: () => getImageFileFromNetwork(
+                    "https://firebasestorage.googleapis.com/v0/b/alaa-fb1c3.appspot.com/o/WhatsApp%20Image%202023-05-30%20at%2000.04.56.jpg?alt=media&token=c034c3f8-1b9a-4016-b980-a11558cefe1c"),
+                child: Container(
+                  margin: const EdgeInsets.symmetric(
+                    vertical: 5,
+                    horizontal: 5,
+                  ),
+                  child: Column(
+                    children: [
+                      Icon(
+                        Icons.camera,
+                        size: 30,
+                        color: const Color(0xff375079),
+                      ),
+                    ],
+                  ),
+                ),
               ),
             ),
+            // Container(
+            //   margin: EdgeInsets.only(top: 15),
+            //   height: 40,
+            //   width: double.infinity,
+            //   child: ListView.builder(
+            //     scrollDirection: Axis.horizontal,
+            //     itemCount: 2,
+            //     itemBuilder: (_, size) {
+            //       return DetectTabs(
+            //         iconData: Icons.storefront,
+            //         getImage: getImage,
+            //       );
+            //     },
+            //   ),
+            // ),
             Container(
               margin: const EdgeInsets.only(top: 50),
               child: Text(
@@ -132,6 +156,15 @@ class _DetectionTabsState extends State<DetectionTabs> {
     await flutterTts.speak("${result?[0]["label"]}");
   }
 
+  getImageFileFromNetwork(String imageUrl) async {
+    var response = await http.get(Uri.parse(imageUrl));
+    var documentDirectory = await getApplicationDocumentsDirectory();
+    // XFile file = XFile('${documentDirectory.path}/temp.jpeg');
+    final file2 = io.File('${documentDirectory.path}/temp.jpeg');
+    file2.writeAsBytesSync(response.bodyBytes);
+    classifyImage(file2.path);
+  }
+
   loadModel() async {
     await Tflite.loadModel(
       model: "ml/model_unquant.tflite",
@@ -145,29 +178,30 @@ class _DetectionTabsState extends State<DetectionTabs> {
     super.dispose();
   }
 
-  void getImage(ImageSource source) async {
-    try {
-      final pickedImage = await ImagePicker().pickImage(source: source);
-      if (pickedImage != null) {
-        imageLabelChecking = true;
-        imageFile = pickedImage;
-        setState(() {
-          imageLabelChecking = true;
-          imageFile = pickedImage;
-        });
-        classifyImage(pickedImage);
-      }
-    } catch (e) {
-      imageLabelChecking = false;
-      imageFile = null;
-      imageLabel = "Error occurred while getting image Label";
-      setState(() {});
-    }
-  }
+  // void getImage(ImageSource source) async {
+  //   try {
+  //     final pickedImage = await ImagePicker().pickImage(source: source);
+  //     if (pickedImage != null) {
+  //       imageLabelChecking = true;
+  //       imageFile = pickedImage;
+  //       setState(() {
+  //         imageLabelChecking = true;
+  //         imageFile = pickedImage;
+  //       });
+  //       classifyImage(pickedImage);
+  //     }
+  //   } catch (e) {
+  //     imageLabelChecking = false;
+  //     imageFile = null;
+  //     imageLabel = "Error occurred while getting image Label";
+  //     setState(() {});
+  //   }
+  // }
 
-  classifyImage(XFile image) async {
+  classifyImage(String image) async {
+    // final inputImage = InputImage.fromFilePath(image.path);
     var output = await Tflite.runModelOnImage(
-      path: image.path,
+      path: image,
       imageMean: 127.5, // defaults to 117.0
       imageStd: 127.5, // defaults to 1.0
       numResults: 2, // defaults to 5
