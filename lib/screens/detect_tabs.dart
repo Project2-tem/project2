@@ -11,30 +11,26 @@ class DetectTabs extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      margin: EdgeInsets.only(left: 10, right: 10),
-      child: ElevatedButton(
-        style: ElevatedButton.styleFrom(
-          backgroundColor: Colors.white,
-          foregroundColor: Colors.grey[400],
-          shape:
-              RoundedRectangleBorder(borderRadius: BorderRadius.circular(8.0)),
+    return ElevatedButton(
+      style: ElevatedButton.styleFrom(
+        backgroundColor: Colors.white,
+        foregroundColor: Colors.grey[400],
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8.0)),
+      ),
+      onPressed: () => getImage!(ImageSource.camera),
+      child: Container(
+        margin: const EdgeInsets.symmetric(
+          vertical: 5,
+          horizontal: 5,
         ),
-        onPressed: () => getImage!(ImageSource.gallery),
-        child: Container(
-          margin: const EdgeInsets.symmetric(
-            vertical: 5,
-            horizontal: 5,
-          ),
-          child: Column(
-            children: [
-              Icon(
-                iconData,
-                size: 30,
-                color: const Color(0xff375079),
-              ),
-            ],
-          ),
+        child: Column(
+          children: [
+            Icon(
+              iconData,
+              size: 30,
+              color: const Color(0xff375079),
+            ),
+          ],
         ),
       ),
     );
